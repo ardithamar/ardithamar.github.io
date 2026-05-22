@@ -626,10 +626,10 @@ section{padding:100px 0;}
   const canvas = document.getElementById('wave-canvas');
   const ctx = canvas.getContext('2d');
   const WAVES = [
-    { freq:1.4, amp:38, speed:0.022, color:'#00c9a7', alpha:0.55, phase:0 },
-    { freq:2.6, amp:22, speed:0.038, color:'#f0a500', alpha:0.35, phase:1.2 },
-    { freq:0.7, amp:18, speed:0.012, color:'#eae6dd', alpha:0.12, phase:2.5 },
-    { freq:4.1, amp:10, speed:0.055, color:'#00c9a7', alpha:0.2,  phase:0.7 },
+    { freq:1, amp:38, speed:0.006, color:'#00c9a7', alpha:0.55, phase:0 },
+    { freq:2, amp:22, speed:0.008, color:'#f0a500', alpha:0.35, phase:1.2 },
+    { freq:3, amp:18, speed:0.012, color:'#eae6dd', alpha:0.12, phase:2.5 },
+    { freq:4, amp:10, speed:0.005, color:'#00c9a7', alpha:0.2,  phase:0.7 },
   ];
   let t = 0;
   function resize(){
@@ -642,7 +642,7 @@ section{padding:100px 0;}
     WAVES.forEach(w=>{
       ctx.beginPath();
       for(let x=0;x<=W;x+=2){
-        const y = mid + w.amp * Math.sin(w.freq*(x/W)*Math.PI*2 - t*w.speed*60 + w.phase);
+        const y = mid + w.amp * Math.sin(w.freq * Math.PI * (x/W)) * Math.cos(t * w.speed * 60 + w.phase);
         x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
       }
       ctx.strokeStyle = w.color;
