@@ -1,218 +1,673 @@
-<!DOCTYPE HTML>
-<!--
-	Hyperspace by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<title>Ardith Amar</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Alex Rivera — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07080d;
+  --bg2:#0d0f18;
+  --bg3:#111420;
+  --border:#1e2336;
+  --amber:#f0a500;
+  --amber-dim:#b87800;
+  --teal:#00c9a7;
+  --teal-dim:#008c74;
+  --hi:#eae6dd;
+  --mid:#8892a8;
+  --lo:#3d4459;
+  --font-display:'Rajdhani',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--hi);
+  font-family:var(--font-mono);
+  font-size:14px;
+  line-height:1.7;
+  overflow-x:hidden;
+}
 
-		<!-- Sidebar -->
-			<section id="sidebar">
-					<div class="shooting-star"></div>
-					<div class="shooting-star"></div>
-					<div class="shooting-star"></div>
-					<div class="shooting-star"></div>
-					<div class="inner">
-						<nav>
-							<ul>
-								<li><a href="#intro">Welcome</a></li>
-								<li><a href="#one">Featured Projects</a></li>
-								<li><a href="#two">About Me</a></li>
-								<li><a href="#three">Contact</a></li>
-							</ul>
-						</nav>
-					</div>
-			</section>
+/* ── Grain ── */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  opacity:.3;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+}
 
-		<!-- Wrapper -->
-			<div id="wrapper">
+/* ── Nav ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  height:56px;
+  background:rgba(7,8,13,0.75);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 40px;
+  gap:32px;
+}
+.nav-logo{
+  font-family:var(--font-display);
+  font-size:18px;font-weight:700;
+  color:var(--amber);
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-right:auto;
+  text-decoration:none;
+}
+.nav-link{
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--mid);text-decoration:none;
+  transition:color .2s;
+}
+.nav-link:hover{color:var(--teal)}
 
-				<!-- Intro -->
-					<section id="intro" class="wrapper style1 fullscreen fade-up">
-						<div class="inner">
-							<h1>Ardith Amar</h1>
-							<p>Aerospace Engineer</p>
-							<ul class="actions">
-								<li><a href="#two" class="button scrolly">Learn more</a></li>
-							</ul>
-							<div class="scene">
-								<i class="fa fa-rocket" aria-hidden="true"></i>
-								<span class="cloud cloud1"><i class="fa fa-cloud" aria-hidden="true"></i></span>
-								<span class="cloud cloud2"><i class="fa fa-cloud" aria-hidden="true"></i></span>
-								<span class="cloud cloud3"><i class="fa fa-cloud" aria-hidden="true"></i></span>
-							</div>
-						</div>
-					</section>
+/* ── Hero ── */
+#hero{
+  position:relative;height:100vh;min-height:640px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  overflow:hidden;
+}
+#star-canvas{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  z-index:0;
+}
+#hero-arc{
+  position:absolute;inset:0;z-index:1;
+  width:100%;height:100%;
+  pointer-events:none;
+}
+.hero-content{
+  position:relative;z-index:10;
+  text-align:center;
+  padding:0 24px;
+}
+.hero-eyebrow{
+  font-size:10px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--teal);margin-bottom:20px;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+}
+.hero-eyebrow::before,.hero-eyebrow::after{
+  content:'';display:block;width:40px;height:1px;background:var(--teal-dim);
+}
+.hero-name{
+  font-family:var(--font-display);
+  font-size:clamp(52px,9vw,120px);
+  font-weight:700;
+  letter-spacing:-1px;
+  line-height:.95;
+  color:var(--hi);
+  margin-bottom:16px;
+}
+.hero-name span{color:var(--amber);}
+.hero-sub{
+  font-size:12px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--mid);margin-bottom:48px;
+}
+.hero-cta{
+  display:flex;align-items:center;justify-content:center;gap:16px;
+  flex-wrap:wrap;
+}
+.btn{
+  font-family:var(--font-mono);
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  text-decoration:none;
+  padding:12px 28px;
+  border-radius:2px;
+  transition:all .2s;
+  cursor:pointer;
+}
+.btn-primary{
+  background:var(--amber);color:#07080d;
+  border:1px solid var(--amber);
+  font-weight:500;
+}
+.btn-primary:hover{background:transparent;color:var(--amber);}
+.btn-ghost{
+  background:transparent;
+  color:var(--mid);
+  border:1px solid var(--border);
+}
+.btn-ghost:hover{border-color:var(--teal);color:var(--teal);}
 
-				<!-- One -->
-					<section id="one" class="wrapper style2 spotlights">
-						<section>
-							<a href="#" class="image"><img src="images/pic01.jpg" alt="" data-position="center center" /></a>
-							<div class="content">
-								<div class="inner">
-									<h2>Motion Magnification</h2>
-									<p>Independent research under supervision of Dr. David Goldstein at UT Austin.</p>
-									<ul class="actions">
-										<li><a href="ProjectOne.html" class="button">Learn more</a></li>
-									</ul>
-								</div>
-							</div>
-						</section>
-						<section>
-							<a href="#" class="image"><img src="images/pic02.jpg" alt="" data-position="top center" /></a>
-							<div class="content">
-								<div class="inner">
-									<h2>Digital Image Correlation</h2>
-									<p>Utilizing GOM Correlate to conduct stress analysis of various materials.</p>
-									<ul class="actions">
-										<li><a href="ProjectTwo.html" class="button">Learn more</a></li>
-									</ul>
-								</div>
-							</div>
-						</section>
-						<section>
-							<a href="#" class="image"><img src="images/pic03.jpg" alt="" data-position="25% 25%" /></a>
-							<div class="content">
-								<div class="inner">
-									<h2>Project Three</h2>
-									<p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus.</p>
-									<ul class="actions">
-										<li><a href="generic.html" class="button">Learn more</a></li>
-									</ul>
-								</div>
-							</div>
-						</section>
-					</section>
+/* wave canvas */
+#wave-canvas{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  width:100%;height:160px;
+  z-index:5;pointer-events:none;
+  opacity:.7;
+}
+.scroll-hint{
+  position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+  z-index:10;
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--lo);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.scroll-hint .arr{
+  width:1px;height:28px;background:var(--lo);
+  animation:scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse{0%,100%{opacity:.3;transform:scaleY(.6)}50%{opacity:1;transform:scaleY(1)}}
 
-				<!-- Two -->
-					<section id="two" class="wrapper style3 fade-up">
-						<div class="inner">
-							<h2>About Me</h2>
-							<p>I am an undergraduate Aerospace Engineering major at the University of Texas at Austin. I am interested in the spaceflight aspect of my field and am looking to join a quick-paced and motivated team.  </p>
-							<div class="features">
-								<section>
-									<span class="icon solid major fa-cubes"></span>
-									<h3>CAD Modeling</h3>
-									<p>Have used Autodesk in a professional environment and am proficient in Solidworks.</p>
-								</section>
-								<section>
-									<span class="icon solid major fa-code"></span>
-									<h3>MATLAB</h3>
-									<p>Used MATLAB for research</p>
-								</section>
-								<section>
-									<span class="icon solid major fa-cog"></span>
-									<h3>Sed erat ullam corper</h3>
-									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
-								</section>
-								<section>
-									<span class="icon solid major fa-desktop"></span>
-									<h3>Veroeros quis lorem</h3>
-									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
-								</section>
-								<section>
-									<span class="icon solid major fa-link"></span>
-									<h3>Urna quis bibendum</h3>
-									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
-								</section>
-								<section>
-									<span class="icon major fa-gem"></span>
-									<h3>Aliquam urna dapibus</h3>
-									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
-								</section>
-							</div>
-							<ul class="actions">
-								<li><a href="generic.html" class="button">Learn more</a></li>
-							</ul>
-						</div>
-					</section>
+/* ── Sections ── */
+section{padding:100px 0;}
+.container{max-width:1060px;margin:0 auto;padding:0 40px;}
 
-				<!-- Three -->
-					<section id="three" class="wrapper style1 fade-up">
-						<div class="inner">
-							<h2>Get in touch</h2>
-							<p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus, lacus eget hendrerit bibendum, urna est aliquam sem, sit amet imperdiet est velit quis lorem.</p>
-							<div class="split style1">
-								<section>
-									<form method="post" action="#">
-										<div class="fields">
-											<div class="field half">
-												<label for="name">Name</label>
-												<input type="text" name="name" id="name" />
-											</div>
-											<div class="field half">
-												<label for="email">Email</label>
-												<input type="text" name="email" id="email" />
-											</div>
-											<div class="field">
-												<label for="message">Message</label>
-												<textarea name="message" id="message" rows="5"></textarea>
-											</div>
-										</div>
-										<ul class="actions">
-											<li><a href="" class="button submit">Send Message</a></li>
-										</ul>
-									</form>
-								</section>
-								<section>
-									<ul class="contact">
-										<li>
-											<h3>Address</h3>
-											<span>12345 Somewhere Road #654<br />
-											Nashville, TN 00000-0000<br />
-											USA</span>
-										</li>
-										<li>
-											<h3>Email</h3>
-											<a href="#">user@untitled.tld</a>
-										</li>
-										<li>
-											<h3>Phone</h3>
-											<span>(000) 000-0000</span>
-										</li>
-										<li>
-											<h3>Social</h3>
-											<ul class="icons">
-												<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
-												<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
-												<li><a href="#" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
-												<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
-												<li><a href="#" class="icon brands fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
-											</ul>
-										</li>
-									</ul>
-								</section>
-							</div>
-						</div>
-					</section>
+.section-label{
+  font-size:9px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--teal);margin-bottom:12px;
+  display:flex;align-items:center;gap:12px;
+}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.section-title{
+  font-family:var(--font-display);
+  font-size:clamp(32px,5vw,56px);
+  font-weight:700;letter-spacing:1px;
+  line-height:1;color:var(--hi);
+  margin-bottom:48px;
+}
 
-			</div>
+/* ── About ── */
+#about .about-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;
+}
+.about-text p{
+  color:var(--mid);margin-bottom:16px;font-size:13.5px;line-height:1.8;
+}
+.about-text p strong{color:var(--hi);}
+.about-stats{
+  display:grid;grid-template-columns:1fr 1fr;gap:2px;
+}
+.stat-cell{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  padding:24px 20px;
+  transition:border-color .2s;
+}
+.stat-cell:hover{border-color:var(--lo);}
+.stat-num{
+  font-family:var(--font-display);
+  font-size:42px;font-weight:700;
+  color:var(--amber);line-height:1;
+  margin-bottom:6px;
+}
+.stat-label{
+  font-size:9px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--lo);
+}
 
-		<!-- Footer -->
-			<footer id="footer" class="wrapper style1-alt">
-				<div class="inner">
-					<ul class="menu">
-						<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-					</ul>
-				</div>
-			</footer>
+/* ── Projects ── */
+#projects{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.project-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:2px;
+}
+.project-card{
+  position:relative;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  padding:32px 28px;
+  text-decoration:none;
+  display:block;
+  transition:border-color .2s,background .2s;
+  overflow:hidden;
+}
+.project-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg,transparent,var(--card-accent,var(--amber)),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.project-card:hover{border-color:var(--lo);background:#13152025;}
+.project-card:hover::before{opacity:1;}
+.project-tag{
+  font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--card-accent,var(--amber));
+  margin-bottom:20px;
+  display:flex;align-items:center;gap:8px;
+}
+.project-tag::before{content:'';width:20px;height:1px;background:currentColor;}
+.project-title{
+  font-family:var(--font-display);
+  font-size:22px;font-weight:600;
+  color:var(--hi);margin-bottom:12px;line-height:1.2;
+}
+.project-desc{
+  font-size:12px;color:var(--mid);line-height:1.7;
+  margin-bottom:24px;
+}
+.project-arrow{
+  font-size:11px;letter-spacing:2px;
+  color:var(--card-accent,var(--amber));
+  display:flex;align-items:center;gap:8px;
+}
+.project-arrow::after{
+  content:'→';transition:transform .2s;
+}
+.project-card:hover .project-arrow::after{transform:translateX(4px);}
+.project-num{
+  position:absolute;bottom:28px;right:28px;
+  font-size:64px;font-weight:700;font-family:var(--font-display);
+  color:var(--border);line-height:1;
+  pointer-events:none;
+}
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
+/* ── Skills ── */
+.skills-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:48px;
+}
+.skill-domain{
+  padding:32px 28px;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:2px;
+}
+.domain-icon{font-size:24px;margin-bottom:16px;}
+.domain-title{
+  font-family:var(--font-display);
+  font-size:20px;font-weight:600;
+  color:var(--hi);margin-bottom:24px;
+  display:flex;align-items:center;gap:12px;
+}
+.domain-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.skill-list{display:flex;flex-wrap:wrap;gap:8px;}
+.skill-tag{
+  font-size:10px;letter-spacing:1px;
+  padding:5px 12px;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  color:var(--mid);
+  border-radius:1px;
+  transition:border-color .2s,color .2s;
+}
+.skill-tag:hover{border-color:var(--teal-dim);color:var(--teal);}
+.skill-tag.accent{border-color:var(--amber-dim);color:var(--amber);}
 
-	</body>
+/* ── Contact ── */
+#contact{
+  text-align:center;
+  background:var(--bg);
+  border-top:1px solid var(--border);
+}
+.contact-email{
+  font-family:var(--font-display);
+  font-size:clamp(28px,5vw,56px);
+  font-weight:700;
+  color:var(--hi);
+  text-decoration:none;
+  display:inline-block;
+  margin-bottom:40px;
+  transition:color .2s;
+  letter-spacing:1px;
+}
+.contact-email:hover{color:var(--amber);}
+.contact-links{
+  display:flex;align-items:center;justify-content:center;gap:32px;
+  margin-bottom:60px;
+}
+.contact-link{
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--lo);text-decoration:none;
+  transition:color .2s;
+}
+.contact-link:hover{color:var(--teal);}
+.footer-bar{
+  border-top:1px solid var(--border);
+  padding-top:32px;
+  font-size:10px;letter-spacing:1px;
+  color:var(--lo);
+}
+
+/* ── Fade-in on scroll ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease;}
+.reveal.visible{opacity:1;transform:none;}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  #about .about-grid,
+  .project-grid,
+  .skills-grid{grid-template-columns:1fr;}
+  nav{padding:0 20px;}
+  .container{padding:0 20px;}
+  .nav-link:nth-child(n+3){display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ─── Nav ─── -->
+<nav>
+  <a class="nav-logo" href="#hero">AR</a>
+  <a class="nav-link" href="#about">About</a>
+  <a class="nav-link" href="#projects">Projects</a>
+  <a class="nav-link" href="#skills">Skills</a>
+  <a class="nav-link" href="#contact">Contact</a>
+</nav>
+
+<!-- ─── Hero ─── -->
+<section id="hero">
+  <canvas id="star-canvas"></canvas>
+
+  <!-- rocket arc -->
+  <svg id="hero-arc" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="arcGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#f0a500" stop-opacity="0"/>
+        <stop offset="60%" stop-color="#f0a500" stop-opacity="0.35"/>
+        <stop offset="100%" stop-color="#f0a500" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="arcGrad2" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#00c9a7" stop-opacity="0"/>
+        <stop offset="50%" stop-color="#00c9a7" stop-opacity="0.15"/>
+        <stop offset="100%" stop-color="#00c9a7" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <!-- orbit arcs -->
+    <ellipse cx="600" cy="380" rx="520" ry="160" fill="none" stroke="url(#arcGrad)" stroke-width="1"/>
+    <ellipse cx="600" cy="380" rx="380" ry="240" fill="none" stroke="url(#arcGrad2)" stroke-width="0.75"/>
+    <!-- rocket dot moving along outer arc -->
+    <circle id="rocket-dot" cx="80" cy="380" r="4" fill="#f0a500" opacity="0.9"/>
+    <circle id="rocket-glow" cx="80" cy="380" r="10" fill="#f0a500" opacity="0.15"/>
+    <!-- frequency hash marks left side -->
+    <line x1="32" y1="180" x2="48" y2="180" stroke="#1e2336" stroke-width="1"/>
+    <line x1="32" y1="220" x2="56" y2="220" stroke="#1e2336" stroke-width="1"/>
+    <line x1="32" y1="260" x2="44" y2="260" stroke="#1e2336" stroke-width="1"/>
+    <line x1="32" y1="300" x2="56" y2="300" stroke="#1e2336" stroke-width="1"/>
+    <line x1="32" y1="340" x2="44" y2="344" stroke="#1e2336" stroke-width="1"/>
+    <text x="24" y="220" fill="#3d4459" font-size="8" font-family="'IBM Plex Mono'" text-anchor="end">1k</text>
+    <text x="24" y="300" fill="#3d4459" font-size="8" font-family="'IBM Plex Mono'" text-anchor="end">500</text>
+    <text x="24" y="380" fill="#3d4459" font-size="8" font-family="'IBM Plex Mono'" text-anchor="end">0hz</text>
+  </svg>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Aerospace · Acoustics · Engineering</div>
+    <h1 class="hero-name">Alex<br/><span>Rivera</span></h1>
+    <p class="hero-sub">Building at the edge of flight and sound</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="resume.html">Interactive Resume →</a>
+      <a class="btn btn-ghost" href="#projects">See Projects</a>
+    </div>
+  </div>
+
+  <canvas id="wave-canvas"></canvas>
+  <div class="scroll-hint"><div class="arr"></div>scroll</div>
+</section>
+
+<!-- ─── About ─── -->
+<section id="about">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">About</div>
+      <h2 class="section-title">At the intersection<br/>of thrust and resonance.</h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>I'm an engineer working at the crossroads of <strong>aerospace systems</strong> and <strong>acoustic engineering</strong>. My work spans propulsion dynamics, noise-vibration-harshness analysis, and real-time signal processing for flight vehicles.</p>
+        <p>Currently at Stripe, I architect high-throughput distributed systems — but my roots are in physics: modeling shockwave acoustics, designing quiet aircraft cabins, and optimizing rocket nozzle geometries.</p>
+        <p>I believe the best engineering is <strong>invisible</strong>. A rocket that sounds like silence. A system that scales like gravity — inevitably.</p>
+        <br/>
+        <a class="btn btn-ghost" href="resume.html" style="display:inline-block">Annotate my resume →</a>
+      </div>
+      <div class="about-stats reveal">
+        <div class="stat-cell">
+          <div class="stat-num">43%</div>
+          <div class="stat-label">Latency reduction, distributed cache</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num">$2B</div>
+          <div class="stat-label">Daily transaction volume</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num">4M+</div>
+          <div class="stat-label">Daily active users</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num">60</div>
+          <div class="stat-label">FPS render guarantee</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Projects ─── -->
+<section id="projects">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Selected Work</div>
+      <h2 class="section-title">Projects.</h2>
+    </div>
+    <div class="project-grid">
+      <a class="project-card reveal" href="resume.html" style="--card-accent:#f0a500">
+        <div class="project-tag">Interactive Tool</div>
+        <div class="project-title">Resume Canvas</div>
+        <div class="project-desc">An interactive resume with a spatial annotation layer. Click any bullet point, draw a connector, and leave context — built for interviews and as a portfolio artifact.</div>
+        <div class="project-arrow">explore it</div>
+        <div class="project-num">01</div>
+      </a>
+      <div class="project-card reveal" style="--card-accent:#00c9a7">
+        <div class="project-tag">Acoustics</div>
+        <div class="project-title">Shockwave Propagation Model</div>
+        <div class="project-desc">A numerical solver for sonic boom propagation in stratified atmospheres. Uses finite-difference time-domain methods at supersonic Mach numbers.</div>
+        <div class="project-arrow">coming soon</div>
+        <div class="project-num">02</div>
+      </div>
+      <div class="project-card reveal" style="--card-accent:#a87ae8">
+        <div class="project-tag">Aerospace</div>
+        <div class="project-title">Nozzle Geometry Optimizer</div>
+        <div class="project-desc">Gradient-descent optimization of rocket nozzle contours for maximum specific impulse under altitude constraints. Written in Rust with Python bindings.</div>
+        <div class="project-arrow">coming soon</div>
+        <div class="project-num">03</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Skills ─── -->
+<section id="skills">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Capabilities</div>
+      <h2 class="section-title">Skills.</h2>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-domain reveal">
+        <div class="domain-title" style="color:var(--amber)">Aerospace</div>
+        <div class="skill-list">
+          <span class="skill-tag accent">Propulsion Systems</span>
+          <span class="skill-tag accent">CFD</span>
+          <span class="skill-tag accent">Aerodynamics</span>
+          <span class="skill-tag accent">Trajectory Optimization</span>
+          <span class="skill-tag">MATLAB</span>
+          <span class="skill-tag">Simulink</span>
+          <span class="skill-tag">OpenFOAM</span>
+          <span class="skill-tag">Ansys Fluent</span>
+          <span class="skill-tag">Orbital Mechanics</span>
+          <span class="skill-tag">Thermal Analysis</span>
+        </div>
+      </div>
+      <div class="skill-domain reveal">
+        <div class="domain-title" style="color:var(--teal)">Acoustics</div>
+        <div class="skill-list">
+          <span class="skill-tag" style="border-color:var(--teal-dim);color:var(--teal)">Signal Processing</span>
+          <span class="skill-tag" style="border-color:var(--teal-dim);color:var(--teal)">NVH Analysis</span>
+          <span class="skill-tag" style="border-color:var(--teal-dim);color:var(--teal)">FFT / Spectral</span>
+          <span class="skill-tag">FDTD Methods</span>
+          <span class="skill-tag">Noise Reduction</span>
+          <span class="skill-tag">Acoustic Modeling</span>
+          <span class="skill-tag">Sonar Systems</span>
+          <span class="skill-tag">Room Acoustics</span>
+          <span class="skill-tag">Wave Propagation</span>
+          <span class="skill-tag">Python (scipy)</span>
+        </div>
+      </div>
+      <div class="skill-domain reveal">
+        <div class="domain-title">Software</div>
+        <div class="skill-list">
+          <span class="skill-tag">TypeScript</span>
+          <span class="skill-tag">Rust</span>
+          <span class="skill-tag">Go</span>
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">C++</span>
+          <span class="skill-tag">PostgreSQL</span>
+          <span class="skill-tag">Redis</span>
+          <span class="skill-tag">Kafka</span>
+          <span class="skill-tag">Kubernetes</span>
+          <span class="skill-tag">Distributed Systems</span>
+        </div>
+      </div>
+      <div class="skill-domain reveal">
+        <div class="domain-title">Methods</div>
+        <div class="skill-list">
+          <span class="skill-tag">System Architecture</span>
+          <span class="skill-tag">Numerical Methods</span>
+          <span class="skill-tag">Optimization</span>
+          <span class="skill-tag">Monte Carlo Sim</span>
+          <span class="skill-tag">Machine Learning</span>
+          <span class="skill-tag">Real-time Systems</span>
+          <span class="skill-tag">API Design</span>
+          <span class="skill-tag">Technical Writing</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Contact ─── -->
+<section id="contact">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Get in touch</div>
+      <h2 class="section-title">Let's work together.</h2>
+    </div>
+    <div class="reveal">
+      <a class="contact-email" href="mailto:alex@email.com">alex@email.com</a>
+      <div class="contact-links">
+        <a class="contact-link" href="https://github.com" target="_blank">GitHub</a>
+        <span style="color:var(--border)">·</span>
+        <a class="contact-link" href="https://linkedin.com" target="_blank">LinkedIn</a>
+        <span style="color:var(--border)">·</span>
+        <a class="contact-link" href="resume.html">Resume Canvas</a>
+      </div>
+    </div>
+    <div class="footer-bar reveal">
+      Built from scratch · Alex Rivera © 2025
+    </div>
+  </div>
+</section>
+
+<script>
+// ─── Starfield ───────────────────────────────
+(function(){
+  const canvas = document.getElementById('star-canvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  function resize(){
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  function initStars(){
+    stars = [];
+    const n = Math.floor((canvas.width * canvas.height) / 6000);
+    for(let i=0;i<n;i++){
+      stars.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height,
+        r: Math.random()*1.4+0.2,
+        alpha: Math.random()*0.7+0.1,
+        speed: Math.random()*0.004+0.001,
+        phase: Math.random()*Math.PI*2
+      });
+    }
+  }
+  let t = 0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    t += 0.008;
+    stars.forEach(s=>{
+      const a = s.alpha*(0.6+0.4*Math.sin(t*s.speed*40+s.phase));
+      ctx.beginPath();
+      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle = `rgba(234,230,221,${a})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  resize(); initStars(); draw();
+  window.addEventListener('resize',()=>{ resize(); initStars(); });
+})();
+
+// ─── Rocket dot orbit animation ───────────────
+(function(){
+  const dot  = document.getElementById('rocket-dot');
+  const glow = document.getElementById('rocket-glow');
+  let angle = 0;
+  const cx=600,cy=380,rx=520,ry=160;
+  function tick(){
+    angle += 0.004;
+    const x = cx + rx*Math.cos(angle);
+    const y = cy + ry*Math.sin(angle);
+    [dot,glow].forEach(el=>{ el.setAttribute('cx',x); el.setAttribute('cy',y); });
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+// ─── Oscilloscope wave ───────────────────────
+(function(){
+  const canvas = document.getElementById('wave-canvas');
+  const ctx = canvas.getContext('2d');
+  const WAVES = [
+    { freq:1.4, amp:38, speed:0.022, color:'#00c9a7', alpha:0.55, phase:0 },
+    { freq:2.6, amp:22, speed:0.038, color:'#f0a500', alpha:0.35, phase:1.2 },
+    { freq:0.7, amp:18, speed:0.012, color:'#eae6dd', alpha:0.12, phase:2.5 },
+    { freq:4.1, amp:10, speed:0.055, color:'#00c9a7', alpha:0.2,  phase:0.7 },
+  ];
+  let t = 0;
+  function resize(){
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const W = canvas.width, H = canvas.height, mid = H*0.5;
+    WAVES.forEach(w=>{
+      ctx.beginPath();
+      for(let x=0;x<=W;x+=2){
+        const y = mid + w.amp * Math.sin(w.freq*(x/W)*Math.PI*2 - t*w.speed*60 + w.phase);
+        x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+      }
+      ctx.strokeStyle = w.color;
+      ctx.globalAlpha = w.alpha;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    });
+    t++;
+    requestAnimationFrame(draw);
+  }
+  resize(); draw();
+  window.addEventListener('resize', resize);
+})();
+
+// ─── Scroll reveal ───────────────────────────
+(function(){
+  const els = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); }
+    });
+  },{threshold:0.12});
+  els.forEach(el=>obs.observe(el));
+})();
+</script>
+</body>
 </html>

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Alex Rivera — Interactive Resume</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0c0c10;
+    --surface:  #13131a;
+    --border:   #22222e;
+    --text-hi:  #ede9e1;
+    --text-mid: #9993a8;
+    --text-lo:  #44404f;
+    --accent:   #e8c97a;
+    --colors: #e8c97a, #7ec8a4, #7aade8, #e87aa8, #a87ae8, #e87a7a, #7ac8e8;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text-hi);
+    font-family: 'DM Serif Display', Georgia, serif;
+    overflow-x: hidden;
+  }
+
+  /* ── Topbar ── */
+  #topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    height: 48px;
+    background: rgba(12,12,16,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 28px; gap: 16px;
+  }
+  #topbar .logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--accent);
+  }
+  #topbar .sep { color: var(--border); }
+  #topbar .hint {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--text-lo); letter-spacing: 1px;
+  }
+  #note-count {
+    margin-left: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--text-lo);
+    transition: color .3s;
+  }
+  #note-count.has-notes { color: var(--accent); }
+
+  /* ── Canvas ── */
+  #canvas-wrap {
+    margin-top: 48px;
+    position: relative;
+    min-height: calc(100vh - 48px);
+    padding: 48px 40px 120px;
+    overflow-x: auto;
+  }
+
+  #canvas {
+    position: relative;
+    width: max-content;
+    min-width: 100%;
+  }
+
+  /* ── SVG layer ── */
+  #svg-layer {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  /* ── Resume card ── */
+  #resume-card {
+    position: relative;
+    width: 400px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 36px 40px;
+    z-index: 10;
+    box-shadow: 0 4px 60px rgba(0,0,0,0.6);
+  }
+
+  .r-name {
+    font-size: 26px; color: var(--text-hi);
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+  }
+  .r-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .r-contact {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--text-lo);
+    margin-bottom: 28px;
+  }
+  .r-divider {
+    border: none; border-top: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  .r-section { margin-bottom: 22px; }
+  .r-section-heading {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--text-lo);
+    margin-bottom: 10px;
+  }
+
+  /* ── Clickable resume item ── */
+  .r-item {
+    display: flex; align-items: flex-start;
+    gap: 8px;
+    padding: 5px 8px; margin-left: -8px;
+    border-radius: 4px;
+    border-left: 2px solid transparent;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+    margin-bottom: 2px;
+    user-select: none;
+  }
+  .r-item:hover { background: rgba(255,255,255,0.03); }
+  .r-item.annotated { background: color-mix(in srgb, var(--item-color) 8%, transparent); }
+  .r-item.active { background: rgba(255,255,255,0.05); }
+
+  .r-bullet { color: var(--text-lo); font-size: 15px; line-height: 20px; flex-shrink: 0; transition: color .2s; }
+  .r-item.annotated .r-bullet { color: var(--item-color); }
+
+  .r-text { font-size: 12.5px; color: var(--text-mid); line-height: 20px; flex: 1; transition: color .2s; }
+  .r-item.annotated .r-text { color: var(--text-hi); }
+  .r-text.bold { font-size: 13.5px; color: #bbb; font-family: 'DM Serif Display', serif; }
+  .r-item.annotated .r-text.bold { color: var(--text-hi); }
+
+  .r-pip {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px; line-height: 20px; flex-shrink: 0;
+    color: var(--text-lo); opacity: 0;
+    transition: opacity .2s, color .2s;
+  }
+  .r-item:hover .r-pip { opacity: 1; }
+  .r-item.annotated .r-pip { opacity: 1; color: var(--item-color); }
+
+  /* ── Annotation card ── */
+  .anno-card {
+    position: absolute;
+    width: 272px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    z-index: 20;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+    animation: fadeUp .2s ease;
+    transition: box-shadow .2s;
+  }
+  .anno-card.active {
+    box-shadow: 0 0 0 1px var(--card-color), 0 8px 40px rgba(0,0,0,0.7);
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .anno-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; color: var(--card-color);
+    letter-spacing: 1px; margin-bottom: 8px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .anno-label span { opacity: 0.75; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; }
+
+  .anno-delete {
+    background: none; border: none;
+    color: var(--text-lo); cursor: pointer;
+    font-size: 16px; line-height: 1;
+    padding: 0 0 0 8px;
+    transition: color .15s;
+  }
+  .anno-delete:hover { color: #e87a7a; }
+
+  .anno-divider { border: none; border-top: 1px solid color-mix(in srgb, var(--card-color) 25%, transparent); margin-bottom: 10px; }
+
+  .anno-textarea {
+    width: 100%; min-height: 80px;
+    background: transparent; border: none;
+    color: var(--text-hi);
+    font-family: 'DM Serif Display', serif;
+    font-size: 12.5px; line-height: 1.65;
+    resize: vertical; outline: none;
+  }
+  .anno-textarea::placeholder { color: var(--text-lo); }
+
+  /* ── Floating hint ── */
+  #hint {
+    position: fixed; bottom: 28px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 22px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 1.5px;
+    color: var(--text-lo);
+    pointer-events: none;
+    transition: opacity .4s;
+    white-space: nowrap;
+  }
+  #hint.hidden { opacity: 0; }
+
+  /* ── Grain overlay ── */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 9999;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.4;
+  }
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <span class="logo">Resume Canvas</span>
+  <span class="sep">·</span>
+  <span class="hint">click any line to leave a note</span>
+  <span id="note-count">0 notes</span>
+</div>
+
+<div id="canvas-wrap">
+  <div id="canvas">
+    <svg id="svg-layer"></svg>
+
+    <div id="resume-card">
+      <!-- populated by JS -->
+    </div>
+    <!-- annotation cards injected here -->
+  </div>
+</div>
+
+<div id="hint">↑ click any line on the resume to add a note</div>
+
+<script>
+// ─────────────────────────────────────────────
+//  EDIT YOUR RESUME DATA HERE
+// ─────────────────────────────────────────────
+const RESUME = {
+  name: "Alex Rivera",
+  title: "Senior Product Engineer",
+  contact: "alex@email.com  ·  (555) 123-4567  ·  San Francisco, CA",
+  sections: [
+    {
+      id: "exp",
+      heading: "Experience",
+      items: [
+        { id: "e1t", text: "Lead Engineer — Stripe (2022–Present)", bold: true },
+        { id: "e1b1", text: "Architected real-time payment reconciliation system handling $2B/day", bullet: true },
+        { id: "e1b2", text: "Reduced API latency by 43% through distributed caching layer", bullet: true },
+        { id: "e1b3", text: "Led 8-person team across 3 time zones", bullet: true },
+        { id: "e2t", text: "Software Engineer — Figma (2019–2022)", bold: true },
+        { id: "e2b1", text: "Built multiplayer canvas engine serving 4M+ daily users", bullet: true },
+        { id: "e2b2", text: "Shipped vector rendering pipeline with 60fps guarantee", bullet: true },
+      ]
+    },
+    {
+      id: "edu",
+      heading: "Education",
+      items: [
+        { id: "edt", text: "BS Computer Science — UC Berkeley, 2019", bold: true },
+        { id: "edb1", text: "GPA 3.9  ·  Regents Scholar", bullet: true },
+      ]
+    },
+    {
+      id: "skills",
+      heading: "Skills",
+      items: [
+        { id: "sk1", text: "TypeScript, Rust, Go, Python", bullet: true },
+        { id: "sk2", text: "PostgreSQL, Redis, Kafka, Kubernetes", bullet: true },
+        { id: "sk3", text: "System design, distributed systems, API architecture", bullet: true },
+      ]
+    }
+  ]
+};
+
+const COLORS = [
+  "#e8c97a","#7ec8a4","#7aade8",
+  "#e87aa8","#a87ae8","#e87a7a","#7ac8e8"
+];
+
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+const LS_KEY = "resume-canvas-notes";
+let notes = {};          // { id: { text, color } }
+let colorIndex = 0;
+let activeId = null;
+
+function loadNotes() {
+  try { notes = JSON.parse(localStorage.getItem(LS_KEY) || "{}"); }
+  catch { notes = {}; }
+  // restore colorIndex so new colors don't collide
+  colorIndex = Object.keys(notes).length;
+}
+function saveNotes() {
+  localStorage.setItem(LS_KEY, JSON.stringify(notes));
+}
+function nextColor() {
+  return COLORS[colorIndex++ % COLORS.length];
+}
+
+// ─────────────────────────────────────────────
+//  BUILD RESUME DOM
+// ─────────────────────────────────────────────
+function buildResume() {
+  const card = document.getElementById("resume-card");
+  card.innerHTML = `
+    <div class="r-name">${RESUME.name}</div>
+    <div class="r-title">${RESUME.title}</div>
+    <div class="r-contact">${RESUME.contact}</div>
+    <hr class="r-divider" />
+    ${RESUME.sections.map(s => `
+      <div class="r-section">
+        <div class="r-section-heading">${s.heading}</div>
+        ${s.items.map(item => `
+          <div class="r-item${notes[item.id] ? " annotated" : ""}"
+               data-id="${item.id}"
+               ${notes[item.id] ? `style="--item-color:${notes[item.id].color}"` : ""}>
+            ${item.bullet ? `<span class="r-bullet">›</span>` : ""}
+            <span class="r-text${item.bold ? " bold" : ""}">${item.text}</span>
+            <span class="r-pip">${notes[item.id] ? "●" : "+"}</span>
+          </div>
+        `).join("")}
+      </div>
+    `).join("")}
+  `;
+  card.querySelectorAll(".r-item").forEach(el => {
+    el.addEventListener("click", () => handleItemClick(el.dataset.id));
+  });
+}
+
+// ─────────────────────────────────────────────
+//  ANNOTATION CARDS
+// ─────────────────────────────────────────────
+function getItemText(id) {
+  for (const s of RESUME.sections)
+    for (const item of s.items)
+      if (item.id === id) return item.text;
+  return id;
+}
+
+function createCard(id) {
+  const color = notes[id].color;
+  const label = getItemText(id);
+  const div = document.createElement("div");
+  div.className = "anno-card";
+  div.id = `card-${id}`;
+  div.style.setProperty("--card-color", color);
+  div.innerHTML = `
+    <div class="anno-label">
+      <span>${label.length > 40 ? label.slice(0,39)+"…" : label}</span>
+      <button class="anno-delete" title="Remove note">×</button>
+    </div>
+    <hr class="anno-divider" />
+    <textarea class="anno-textarea" placeholder="Add context, story, or detail for interviews…">${notes[id].text || ""}</textarea>
+  `;
+  div.querySelector(".anno-delete").addEventListener("click", e => {
+    e.stopPropagation();
+    deleteNote(id);
+  });
+  div.querySelector(".anno-textarea").addEventListener("input", e => {
+    notes[id].text = e.target.value;
+    saveNotes();
+  });
+  div.addEventListener("click", () => setActive(id));
+  document.getElementById("canvas").appendChild(div);
+  positionCards();
+  drawLines();
+}
+
+function positionCards() {
+  const canvasEl = document.getElementById("canvas");
+  const resumeCard = document.getElementById("resume-card");
+  const cardX = resumeCard.offsetLeft + resumeCard.offsetWidth + 80;
+  const CARD_W = 272;
+
+  // sort by vertical position
+  const ids = Object.keys(notes).sort((a, b) => {
+    const ea = document.querySelector(`.r-item[data-id="${a}"]`);
+    const eb = document.querySelector(`.r-item[data-id="${b}"]`);
+    return (ea ? ea.offsetTop : 0) - (eb ? eb.offsetTop : 0);
+  });
+
+  let lastBottom = 0;
+  ids.forEach(id => {
+    const el = document.querySelector(`.r-item[data-id="${id}"]`);
+    if (!el) return;
+    const itemTop = el.offsetTop + el.offsetHeight / 2;
+    let top = itemTop - 40;
+    if (top < lastBottom + 8) top = lastBottom + 8;
+    const card = document.getElementById(`card-${id}`);
+    if (card) {
+      card.style.left = cardX + "px";
+      card.style.top = top + "px";
+      lastBottom = top + card.offsetHeight + 8;
+    }
+  });
+}
+
+// ─────────────────────────────────────────────
+//  SVG CONNECTOR LINES
+// ─────────────────────────────────────────────
+function drawLines() {
+  const svg = document.getElementById("svg-layer");
+  svg.innerHTML = "";
+
+  // make sure SVG matches canvas size
+  const canvas = document.getElementById("canvas");
+  svg.style.width  = canvas.scrollWidth  + "px";
+  svg.style.height = canvas.scrollHeight + "px";
+
+  Object.keys(notes).forEach(id => {
+    const itemEl = document.querySelector(`.r-item[data-id="${id}"]`);
+    const cardEl = document.getElementById(`card-${id}`);
+    if (!itemEl || !cardEl) return;
+
+    const color = notes[id].color;
+    const isActive = id === activeId;
+
+    const x1 = itemEl.offsetLeft + itemEl.offsetWidth + 8;
+    const y1 = itemEl.offsetTop  + itemEl.offsetHeight / 2;
+    const x2 = parseFloat(cardEl.style.left) + 40;
+    const y2 = parseFloat(cardEl.style.top)  + 40;
+    const cx = (x1 + x2) / 2;
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+    path.setAttribute("d", `M ${x1} ${y1} C ${cx} ${y1}, ${cx} ${y2}, ${x2} ${y2}`);
+    path.setAttribute("fill","none");
+    path.setAttribute("stroke", color);
+    path.setAttribute("stroke-width", isActive ? 2 : 1.5);
+    path.setAttribute("stroke-opacity", isActive ? 1 : 0.45);
+    path.setAttribute("stroke-dasharray", isActive ? "none" : "4 3");
+    svg.appendChild(path);
+
+    [{ x: x1, y: y1 }, { x: x2, y: y2 }].forEach(({ x, y }) => {
+      const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+      c.setAttribute("cx", x); c.setAttribute("cy", y);
+      c.setAttribute("r", isActive ? 3.5 : 2.5);
+      c.setAttribute("fill", color);
+      c.setAttribute("opacity", isActive ? 1 : 0.5);
+      svg.appendChild(c);
+    });
+  });
+}
+
+// ─────────────────────────────────────────────
+//  INTERACTION
+// ─────────────────────────────────────────────
+function handleItemClick(id) {
+  if (activeId === id) { setActive(null); return; }
+
+  if (!notes[id]) {
+    notes[id] = { text: "", color: nextColor() };
+    saveNotes();
+    // update item DOM
+    const el = document.querySelector(`.r-item[data-id="${id}"]`);
+    if (el) {
+      el.classList.add("annotated");
+      el.style.setProperty("--item-color", notes[id].color);
+      el.querySelector(".r-pip").textContent = "●";
+    }
+    createCard(id);
+    updateHint();
+    updateCount();
+  }
+  setActive(id);
+  // focus textarea
+  setTimeout(() => {
+    const ta = document.querySelector(`#card-${id} .anno-textarea`);
+    if (ta) ta.focus();
+  }, 50);
+}
+
+function setActive(id) {
+  activeId = id;
+  document.querySelectorAll(".r-item").forEach(el => el.classList.remove("active"));
+  document.querySelectorAll(".anno-card").forEach(el => el.classList.remove("active"));
+  if (id) {
+    const item = document.querySelector(`.r-item[data-id="${id}"]`);
+    const card = document.getElementById(`card-${id}`);
+    if (item) item.classList.add("active");
+    if (card) card.classList.add("active");
+  }
+  drawLines();
+}
+
+function deleteNote(id) {
+  delete notes[id];
+  saveNotes();
+
+  const el = document.querySelector(`.r-item[data-id="${id}"]`);
+  if (el) {
+    el.classList.remove("annotated","active");
+    el.style.removeProperty("--item-color");
+    el.querySelector(".r-pip").textContent = "+";
+  }
+  const card = document.getElementById(`card-${id}`);
+  if (card) card.remove();
+
+  if (activeId === id) activeId = null;
+  drawLines();
+  updateHint();
+  updateCount();
+}
+
+function updateHint() {
+  document.getElementById("hint").classList.toggle("hidden", Object.keys(notes).length > 0);
+}
+function updateCount() {
+  const n = Object.keys(notes).length;
+  const el = document.getElementById("note-count");
+  el.textContent = n === 0 ? "0 notes" : `${n} note${n !== 1 ? "s" : ""}`;
+  el.classList.toggle("has-notes", n > 0);
+}
+
+// ─────────────────────────────────────────────
+//  RESTORE SAVED NOTES
+// ─────────────────────────────────────────────
+function restoreNotes() {
+  Object.keys(notes).forEach(id => {
+    // make sure this id still exists in resume data
+    const exists = RESUME.sections.some(s => s.items.some(i => i.id === id));
+    if (!exists) { delete notes[id]; return; }
+
+    const el = document.querySelector(`.r-item[data-id="${id}"]`);
+    if (el) {
+      el.classList.add("annotated");
+      el.style.setProperty("--item-color", notes[id].color);
+      el.querySelector(".r-pip").textContent = "●";
+    }
+    createCard(id);
+  });
+  saveNotes();
+}
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+loadNotes();
+buildResume();
+restoreNotes();
+updateHint();
+updateCount();
+
+// redraw on resize
+let resizeTimer;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => { positionCards(); drawLines(); }, 100);
+});
+
+// click outside to deselect
+document.addEventListener("click", e => {
+  if (!e.target.closest(".r-item") && !e.target.closest(".anno-card")) {
+    setActive(null);
+  }
+});
+</script>
+</body>
+</html>
